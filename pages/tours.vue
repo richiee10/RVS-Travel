@@ -12,12 +12,15 @@
         </nav>
       </div>
       <div class="absolute left-1/2 transform -translate-x-1/2">
-        <img src="/images/logo2.png" alt="RVS Logo" class="h-40 w-auto" />
+        <img src="/images/logo2.png" alt="RVS Logo" class="h-30 w-auto" />
       </div>
       <div class="ml-auto">
-        <NuxtLink to="/login" class="hover:text-white transition">
-          <i class="far fa-user-circle text-3xl"></i>
-        </NuxtLink>
+        <button
+          @click="$router.push('/reservation')"
+          class="px-10 py-3 border border-[#E1B98A] text-[#E1B98A] bg-transparent rounded transition-all duration-300 font-[100] text-l hover:bg-[#E1B98A] hover:text-[#063C1E] shadow-none animate-fade-in"
+        >
+          Make reservation
+        </button>
       </div>
     </header>
 
@@ -89,9 +92,9 @@
         <div>
           <h3 class="font-semibold mb-4">Connect with Us</h3>
           <div class="flex flex-col gap-2">
-            <a href="#" class="hover:text-white transition"><i class="fab fa-facebook"></i> Facebook</a>
-            <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i> Instagram</a>
-            <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i> Twitter</a>
+            <a href="https://www.facebook.com/share/1Bt8hNEEPc/?mibextid=wwXIfr" class="hover:text-white transition"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="https://www.instagram.com/ragava.10?igsh=a2duZmNqeDVtbWcw" class="hover:text-white transition"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="https://wa.me/+60198909550" class="hover:text-white transition"><i class="fab fa-whatsapp"></i> Whatsapp</a>
           </div>
         </div>
       </div>

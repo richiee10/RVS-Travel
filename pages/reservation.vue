@@ -18,7 +18,7 @@ function sendRequest() {
 <template>
   <div class="min-h-screen bg-[#063C1E] text-[#E1B98A] font-sans overflow-x-hidden">
     
-    <header class="flex items-center justify-between px-8 py-5 bg-[#063C1E] text-[#E1B98A] shadow sticky top-0 z-50 relative">
+    <header class="flex items-center justify-between px-8 py-7 bg-[#063C1E] text-[#E1B98A] shadow sticky top-0 z-50 relative">
       <div class="flex items-center gap-6 text-lg font-heading">
         <button class="md:hidden text-[#E1B98A] text-2xl">
           <i class="fas fa-bars"></i>
@@ -31,13 +31,16 @@ function sendRequest() {
       </div>
       <!-- Center Logo -->
       <div class="absolute left-1/2 transform -translate-x-1/2">
-        <img src="/images/logo2.png" alt="RVS Logo" class="h-14 w-auto" />
+        <img src="/images/logo2.png" alt="RVS Logo" class="h-30 w-auto" />
       </div>
-      <!-- Right: Login -->
+      
       <div class="ml-auto">
-        <NuxtLink to="/login" class="hover:text-white transition">
-          <i class="far fa-user-circle text-3xl"></i>
-        </NuxtLink>
+        <button
+          @click="$router.push('/')"
+          class="px-10 py-3 border border-[#E1B98A] text-[#E1B98A] bg-transparent rounded transition-all duration-300 font-[100] text-l hover:bg-[#E1B98A] hover:text-[#063C1E] shadow-none animate-fade-in"
+        >
+          Back to Home
+        </button>
       </div>
     </header>
 
@@ -109,6 +112,7 @@ function sendRequest() {
         </button>
       </div>
     </main>
+    
   </div>
 </template>
 
