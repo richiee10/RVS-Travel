@@ -17,7 +17,7 @@ function sendRequest() {
 
 <template>
   <div class="min-h-screen bg-[#063C1E] text-[#E1B98A] font-sans overflow-x-hidden">
-    <!-- Navbar -->
+    
     <header class="flex items-center justify-between px-8 py-5 bg-[#063C1E] text-[#E1B98A] shadow sticky top-0 z-50 relative">
       <div class="flex items-center gap-6 text-lg font-heading">
         <button class="md:hidden text-[#E1B98A] text-2xl">
