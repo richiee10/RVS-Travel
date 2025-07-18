@@ -34,7 +34,7 @@
     </div>
 
     <!-- Right: Reservation Button -->
-    <div class="ml-auto">
+    <div class="ml-auto hidden md:block">
       <button
         @click="goReservation"
         class="px-10 py-3 border border-[#E1B98A] text-[#E1B98A] bg-transparent rounded transition-all duration-300 font-[100] text-l hover:bg-[#E1B98A] hover:text-[#063C1E] shadow-none animate-fade-in"
@@ -51,7 +51,7 @@
         style="backdrop-filter: blur(2px);"
       >
         <div class="flex items-center justify-between p-6">
-          <img src="/images/logo2.png" alt="RVS Logo" class="h-20 w-auto" />
+          <img src="/images/logoblc.png" alt="RVS Logo" class="h-30 w-auto" />
           <button
             class="text-3xl text-[#063C1E] hover:text-[#E1B98A] transition"
             @click="menuOpen = false"
@@ -71,6 +71,16 @@
             {{ link.label }}
           </button>
         </nav>
+        <!-- Reservation Button at the Bottom (mobile only) -->
+        <div class="flex-1"></div>
+        <div class="flex justify-center mb-10">
+          <button
+            @click="goReservation"
+            class="px-10 py-3 border border-[#063C1E] text-[#063C1E] bg-transparent rounded transition-all duration-300 font-[100] text-2xl hover:bg-[#063C1E] hover:text-[#E1B98A] shadow-none animate-fade-in"
+          >
+            Make reservation
+          </button>
+        </div>
       </div>
     </transition>
   </header>
@@ -92,6 +102,7 @@
         <img src="/images/1.jpg" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300" />
         <img src="/images/2.jpg" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300" />
         <img src="/images/3.jpg" class="col-span-2 rounded-lg shadow-lg hover:scale-105 transition-transform duration-300" />
+        
       </div>
     </section>
 
