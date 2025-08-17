@@ -2,132 +2,274 @@
 import { ref } from 'vue'
 import Datepicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+import jsPDF from 'jspdf'
 
 const selectedGuests = ref(2)
-const places = ['Thailand', 'Singapore', 'Malaysia', 'Indonesia', 'Vietnam']
+const places = ['Singapore', 'Thailand', 'Malaysia']
 const selectedPlace = ref('')
-const selectedDate = ref(null)
+const startDate = ref(null)
+const endDate = ref(null)
 const contactName = ref('')
 const contactPhone = ref('')
+const userComment = ref('')
 
 function sendRequest() {
-  alert(`Reservation for ${selectedGuests.value + 1} guests to ${selectedPlace.value} on ${selectedDate.value ? selectedDate.value.toLocaleDateString() : ''}. Contact: ${contactName.value}, ${contactPhone.value}`)
+  const doc = new jsPDF()
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(16)
+  doc.text('RVS Travels - Reservation Confirmation', 105, 20, { align: 'center' })
+
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'normal')
+
+  let y = 40
+  const lineGap = 10
+
+  doc.text(`Full Name         : ${contactName.value || '-'}`, 20, y)
+  y += lineGap
+  doc.text(`Contact Number    : ${contactPhone.value || '-'}`, 20, y)
+  y += lineGap
+  doc.text(`Total Guests      : ${selectedGuests.value + 1}`, 20, y)
+  y += lineGap
+  doc.text(`Destination       : ${selectedPlace.value || '-'}`, 20, y)
+  y += lineGap
+  doc.text(`Travel Start Date : ${startDate.value ? startDate.value.toLocaleDateString() : '-'}`, 20, y)
+  y += lineGap
+  doc.text(`Travel End Date   : ${endDate.value ? endDate.value.toLocaleDateString() : '-'}`, 20, y)
+  y += lineGap + 5
+
+  doc.setFont('helvetica', 'bold')
+  doc.text('Additional Message:', 20, y)
+  y += lineGap
+  doc.setFont('helvetica', 'normal')
+
+  const messageLines = doc.splitTextToSize(userComment.value || '—', 170)
+  doc.text(messageLines, 20, y)
+  y += messageLines.length * lineGap
+
+  // Divider
+  y += 5
+  doc.setDrawColor(200)
+  doc.line(20, y, 190, y)
+  y += lineGap
+
+  // Contact Info
+  doc.setFont('helvetica', 'bold')
+  doc.text('📞 For any inquiries, please contact:', 20, y)
+  y += lineGap
+  doc.setFont('helvetica', 'normal')
+  doc.text('Ragava - +60 12-200 4163 (WhatsApp Available)', 20, y)
+  y += lineGap
+
+  // WhatsApp Link
+  doc.setTextColor(0, 102, 204)
+  doc.textWithLink('📲 Click here to contact on WhatsApp', 20, y, {
+    url: `https://wa.me/60122004163`
+  })
+  doc.setTextColor(0) // Reset text color
+
+  const pdfBlob = doc.output('blob')
+  const pdfUrl = URL.createObjectURL(pdfBlob)
+  window.open(pdfUrl)
+
+  const msg = encodeURIComponent(
+    `RVS Travels Reservation:\nName: ${contactName.value}\nPhone: ${contactPhone.value}\nGuests: ${
+      selectedGuests.value + 1
+    }\nDestination: ${selectedPlace.value}\nStart: ${
+      startDate.value?.toLocaleDateString() || '-'
+    }\nEnd: ${endDate.value?.toLocaleDateString() || '-'}\nComment: ${userComment.value}`
+  )
+
+  window.open(`https://wa.me/60122004163?text=${msg}`, '_blank')
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#063C1E] text-[#E1B98A] font-sans overflow-x-hidden">
-    
-    <header class="flex items-center justify-between px-8 py-7 bg-[#063C1E] text-[#E1B98A] shadow sticky top-0 z-50 relative">
-      <div class="flex items-center gap-6 text-lg font-heading">
-        <button class="md:hidden text-[#E1B98A] text-2xl">
-          <i class="fas fa-bars"></i>
-        </button>
-        <nav class="hidden md:flex gap-6">
-          <NuxtLink to="/" class="hover:text-white transition font-semibold">Home</NuxtLink>
-          <NuxtLink to="/tours" class="hover:text-white transition font-semibold">Tours</NuxtLink>
-          <NuxtLink to="/about" class="hover:text-white transition font-semibold">About</NuxtLink>
-        </nav>
-      </div>
-      <!-- Center Logo -->
-      <div class="absolute left-1/2 transform -translate-x-1/2">
-        <img src="/images/logo2.png" alt="RVS Logo" class="h-30 w-auto" />
-      </div>
-      
-      <div class="ml-auto">
-        <button
-          @click="$router.push('/')"
-          class="px-10 py-3 border border-[#E1B98A] text-[#E1B98A] bg-transparent rounded transition-all duration-300 font-[100] text-l hover:bg-[#E1B98A] hover:text-[#063C1E] shadow-none animate-fade-in"
-        >
-          Back to Home
-        </button>
-      </div>
-    </header>
 
-    
-    <main class="flex justify-center items-center min-h-[calc(100vh-80px)] py-8">
-      <div class="bg-[#253C2C] rounded-xl shadow-2xl px-8 py-10 max-w-md w-full flex flex-col items-center border border-[#E1B98A]">
-        <h2 class="text-xl font-bold mb-6 text-[#E1B98A]">Make reservation</h2>
-        
-        
-        <div class="w-full mb-5">
-          <p class="mb-2 font-semibold text-[#E1B98A]">1. Number of guests</p>
-          <div class="flex gap-2 justify-center">
-            <button v-for="n in 8" :key="n"
-              :class="['px-4 py-1 rounded border', selectedGuests === n ? 'bg-[#E1B98A] text-[#063C1E] font-bold' : 'bg-transparent text-[#E1B98A] border-[#E1B98A] hover:bg-[#E1B98A] hover:text-[#063C1E]']"
-              @click="selectedGuests = n">
+<header class="flex items-center justify-between px-5 py-7 bg-[#063C1E] text-[#E1B98A] shadow sticky top-0 z-50 relative">
+    <!-- Left: Hamburger & Nav -->
+    <div class="flex items-center gap-6 text-lg font-heading">
+      <!-- Hamburger, only visible on mobile -->
+      <button
+        class="md:hidden text-[#E1B98A] text-3xl focus:outline-none"
+        @click="menuOpen = true"
+        aria-label="Open menu"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Nav links, hidden on mobile -->
+      <nav class="hidden md:flex gap-">
+        <NuxtLink
+          v-for="link in navLinks"
+          :key="link.to"
+          :to="link.to"
+          class="px-3 py-2 rounded font-bold text-l transition"
+          :class="isActive(link.to)
+            ? 'text-[#ffffff]'
+            : 'text-[#E1B98A] hover:text-white transition'"
+        >
+          {{ link.label }}
+        </NuxtLink>
+      </nav>
+    </div>
+
+    <!-- Center: Logo -->
+    <div class="absolute left-1/2 transform -translate-x-1/2">
+      <img src="/images/logo2.png" alt="RVS Logo" class="h-30 w-auto" />
+    </div>
+
+    <!-- Right: Reservation Button -->
+    <div class="ml-auto hidden md:block">
+      <button
+        @click="goReservation"
+        class="px-10 py-3 border border-[#E1B98A] text-[#E1B98A] bg-transparent rounded transition-all duration-300 font-[100] text-l hover:bg-[#E1B98A] hover:text-[#063C1E] shadow-none animate-fade-in"
+      >
+        Make reservation
+      </button>
+    </div>
+
+    <!-- Mobile: Slide-in Menu Overlay -->
+    <transition name="slide-fade">
+      <div
+        v-if="menuOpen"
+        class="fixed inset-0 z-50 bg-[#f9f9f6]/95 flex flex-col"
+        style="backdrop-filter: blur(2px);"
+      >
+        <div class="flex items-center justify-between p-6">
+          <img src="/images/logoblc.png" alt="RVS Logo" class="h-30 w-auto" />
+          <button
+            class="text-3xl text-[#063C1E] hover:text-[#E1B98A] transition"
+            @click="menuOpen = false"
+            aria-label="Close menu"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <nav class="flex flex-col items-start gap-10 mt-16 ml-10">
+          <button
+            v-for="link in navLinks"
+            :key="link.to"
+            @click="goTo(link.to)"
+            class="text-3xl font-bold px-8 py-2 rounded transition text-[#063C1E] hover:bg-[#E1B98A] hover:text-[#063C1E] focus:outline-none"
+            :class="isActive(link.to) ? 'text-[#E1B98A]' : ''"
+          >
+            {{ link.label }}
+          </button>
+        </nav>
+        <!-- Reservation Button at the Bottom (mobile only) -->
+        <div class="flex-1"></div>
+        <div class="flex justify-center mb-10">
+          <button
+            @click="goReservation"
+            class="px-10 py-3 border border-[#063C1E] text-[#063C1E] bg-transparent rounded transition-all duration-300 font-[100] text-2xl hover:bg-[#063C1E] hover:text-[#E1B98A] shadow-none animate-fade-in"
+          >
+            Make reservation
+          </button>
+        </div>
+      </div>
+    </transition>
+  </header>
+
+
+
+  <div class="min-h-screen bg-[#063C1E] text-[#E1B98A] font-sans overflow-x-hidden">
+    <main class="flex justify-center items-center min-h-screen py-10 px-4">
+      <div class="bg-[#253C2C] rounded-2xl shadow-2xl px-8 py-10 w-full max-w-md animate-fade-in border border-[#E1B98A]">
+        <h2 class="text-2xl font-bold mb-6 text-center">Make reservation</h2>
+
+        <!-- Guests -->
+        <div class="mb-5">
+          <p class="mb-2 font-semibold">1. Number of guests</p>
+          <div class="flex gap-2 justify-center flex-wrap">
+            <button
+              v-for="n in 8"
+              :key="n"
+              :class="['px-4 py-2 rounded border transition', selectedGuests === n ? 'bg-[#E1B98A] text-[#063C1E] font-bold' : 'bg-transparent text-[#E1B98A] border-[#E1B98A] hover:bg-[#E1B98A] hover:text-[#063C1E]']"
+              @click="selectedGuests = n"
+            >
               {{ n+1 }}
             </button>
           </div>
         </div>
 
-        
-        <div class="w-full mb-5">
-          <p class="mb-2 font-semibold text-[#E1B98A]">2. Select destination</p>
+        <!-- Destination -->
+        <div class="mb-5">
+          <p class="mb-2 font-semibold">2. Select destination</p>
           <div class="flex gap-2 justify-center flex-wrap">
             <button
               v-for="place in places"
               :key="place"
-              :class="['px-4 py-1 rounded border', selectedPlace === place ? 'bg-[#E1B98A] text-[#063C1E] font-bold' : 'bg-transparent text-[#E1B98A] border-[#E1B98A] hover:bg-[#E1B98A] hover:text-[#063C1E]']"
-              @click="selectedPlace = place">
+              :class="['px-4 py-2 rounded border transition', selectedPlace === place ? 'bg-[#E1B98A] text-[#063C1E] font-bold' : 'bg-transparent text-[#E1B98A] border-[#E1B98A] hover:bg-[#E1B98A] hover:text-[#063C1E]']"
+              @click="selectedPlace = place"
+            >
               {{ place }}
             </button>
           </div>
         </div>
 
-       
-        <div class="w-full mb-5 flex flex-col items-center">
-          <p class="mb-2 font-semibold text-[#E1B98A]">3. Select date</p>
-          <Datepicker
-            v-model="selectedDate"
-            :inline="true"
-            :auto-apply="true"
-            :enable-time-picker="false"
-            class="w-full custom-calendar"
-          />
+        <!-- Dates -->
+        <div class="mb-5">
+          <p class="mb-2 font-semibold">3. Select travel dates</p>
+          <div class="flex flex-col gap-4">
+            <Datepicker
+              v-model="startDate"
+              placeholder="Start Date"
+              :auto-apply="true"
+              :enable-time-picker="false"
+              input-class-name="dp-custom"
+            />
+            <Datepicker
+              v-model="endDate"
+              placeholder="End Date"
+              :auto-apply="true"
+              :enable-time-picker="false"
+              input-class-name="dp-custom"
+            />
+          </div>
         </div>
 
-        
-        <div class="w-full mb-6 flex gap-2">
-          <input
-            type="text"
-            v-model="contactName"
-            placeholder="Full name"
-            class="flex-1 px-3 py-2 rounded border border-[#E1B98A] bg-[#f9f9f6] text-[#063C1E] placeholder-[#063C1E] focus:outline-none"
-          />
-          <input
-            type="tel"
-            v-model="contactPhone"
-            placeholder="Phone number"
-            class="flex-1 px-3 py-2 rounded border border-[#E1B98A] bg-[#f9f9f6] text-[#063C1E] placeholder-[#063C1E] focus:outline-none"
-          />
+        <!-- Inputs -->
+        <div class="mb-4 flex flex-col gap-3">
+          <input v-model="contactName" placeholder="Full name" class="form-input" />
+          <input v-model="contactPhone" type="tel" placeholder="Phone number" class="form-input" />
         </div>
 
-        
-        <button
-          class="w-full mt-4 bg-[#E1B98A] text-[#063C1E] font-bold py-2 rounded hover:bg-[#b89161] transition"
-          @click="sendRequest"
-        >
-          Send request
+        <!-- Comment -->
+        <div class="mb-6">
+          <textarea v-model="userComment" rows="3" placeholder="Write a message..." class="form-input resize-none"></textarea>
+        </div>
+
+        <button @click="sendRequest" class="w-full bg-[#E1B98A] text-[#063C1E] font-bold py-2 rounded hover:bg-[#b89161] transition">
+          Send Request
         </button>
       </div>
     </main>
-    
   </div>
 </template>
 
-<style>
-
-.custom-calendar .dp__theme_light {
-  --dp-background-color: #253C2C !important;
-  --dp-text-color: #E1B98A !important;
-  --dp-primary-color: #E1B98A !important; 
-  --dp-primary-text-color: #063C1E !important;
-  --dp-hover-color: #E1B98A22 !important;
-  --dp-border-radius: 16px !important;
-  --dp-cell-border-radius: 8px !important;
-  --dp-border-color: #E1B98A !important;
-  --dp-accent-color: #E1B98A !important;
-  --dp-font-family: 'Poppins', 'Playfair Display', serif !important;
+<style scoped>
+.form-input {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #E1B98A;
+  background-color: #f9f9f6;
+  color: #063C1E;
+  width: 100%;
+  outline: none;
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+.dp-custom {
+  background-color: #f9f9f6 !important;
+  color: #063C1E !important;
+  border-radius: 10px !important;
+  border: 1px solid #E1B98A !important;
+  padding: 10px !important;
 }
 </style>

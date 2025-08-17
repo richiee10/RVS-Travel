@@ -1,7 +1,14 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/tailwindcss'],
-  css: ['@/assets/css/main.css'],
+  ssr: false, // Disable SSR so jsPDF works fine
+
+  modules: [
+    '@nuxtjs/tailwindcss'
+  ],
+
+  css: [
+    '@/assets/css/main.css'
+  ],
 
   app: {
     head: {
@@ -15,6 +22,12 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500&display=swap'
         }
       ]
+    }
+  },
+
+  vite: {
+    optimizeDeps: {
+      include: ['jspdf']
     }
   }
 })
