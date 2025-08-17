@@ -12,8 +12,25 @@ const endDate = ref(null)
 const contactName = ref('')
 const contactPhone = ref('')
 const userComment = ref('')
+const warningMessage = ref('')
 
 function sendRequest() {
+  // Form Validation
+  if (
+    !contactName.value ||
+    !contactPhone.value ||
+    !selectedPlace.value ||
+    !startDate.value ||
+    !endDate.value
+  ) {
+    warningMessage.value = 'Please fill in all required fields before submitting.'
+    setTimeout(() => {
+      warningMessage.value = ''
+    }, 3000)
+    return
+  }
+
+  // PDF Generation
   const doc = new jsPDF()
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
@@ -25,24 +42,23 @@ function sendRequest() {
   let y = 40
   const lineGap = 10
 
-  doc.text(`Full Name         : ${contactName.value || '-'}`, 20, y)
+  doc.text(`Full Name         : ${contactName.value}`, 20, y)
   y += lineGap
-  doc.text(`Contact Number    : ${contactPhone.value || '-'}`, 20, y)
+  doc.text(`Contact Number    : ${contactPhone.value}`, 20, y)
   y += lineGap
   doc.text(`Total Guests      : ${selectedGuests.value + 1}`, 20, y)
   y += lineGap
-  doc.text(`Destination       : ${selectedPlace.value || '-'}`, 20, y)
+  doc.text(`Destination       : ${selectedPlace.value}`, 20, y)
   y += lineGap
-  doc.text(`Travel Start Date : ${startDate.value ? startDate.value.toLocaleDateString() : '-'}`, 20, y)
+  doc.text(`Travel Start Date : ${startDate.value.toLocaleDateString()}`, 20, y)
   y += lineGap
-  doc.text(`Travel End Date   : ${endDate.value ? endDate.value.toLocaleDateString() : '-'}`, 20, y)
+  doc.text(`Travel End Date   : ${endDate.value.toLocaleDateString()}`, 20, y)
   y += lineGap + 5
 
   doc.setFont('helvetica', 'bold')
   doc.text('Additional Message:', 20, y)
   y += lineGap
   doc.setFont('helvetica', 'normal')
-
   const messageLines = doc.splitTextToSize(userComment.value || '—', 170)
   doc.text(messageLines, 20, y)
   y += messageLines.length * lineGap
@@ -55,29 +71,44 @@ function sendRequest() {
 
   // Contact Info
   doc.setFont('helvetica', 'bold')
-  doc.text('📞 For any inquiries, please contact:', 20, y)
+  doc.text('For any inquiries, please contact:', 20, y)
   y += lineGap
   doc.setFont('helvetica', 'normal')
   doc.text('Ragava - +60 12-200 4163 (WhatsApp Available)', 20, y)
   y += lineGap
 
-  // WhatsApp Link
   doc.setTextColor(0, 102, 204)
-  doc.textWithLink('📲 Click here to contact on WhatsApp', 20, y, {
-    url: `https://wa.me/60122004163`
+  doc.textWithLink('Click here to contact us via WhatsApp', 20, y, {
+    url: 'https://wa.me/60122004163'
   })
-  doc.setTextColor(0) // Reset text color
+  doc.setTextColor(0)
+  y += lineGap + 5
 
+  // Final Instructions
+  doc.setFont('helvetica', 'bold')
+  doc.text('Next Steps:', 20, y)
+  y += lineGap
+  doc.setFont('helvetica', 'normal')
+  const instructions = [
+    '1. Download or screenshot this PDF for your records.',
+    '2. Click the WhatsApp link above to send your details instantly.',
+    '3. Our team will get in touch with you to confirm and finalize the booking.',
+    'Make your travel planning quick and easy with RVS Travels !'
+  ]
+  doc.text(doc.splitTextToSize(instructions.join('\n'), 170), 20, y)
+
+  // Open PDF
   const pdfBlob = doc.output('blob')
   const pdfUrl = URL.createObjectURL(pdfBlob)
   window.open(pdfUrl)
 
+  // WhatsApp Message
   const msg = encodeURIComponent(
     `RVS Travels Reservation:\nName: ${contactName.value}\nPhone: ${contactPhone.value}\nGuests: ${
       selectedGuests.value + 1
     }\nDestination: ${selectedPlace.value}\nStart: ${
-      startDate.value?.toLocaleDateString() || '-'
-    }\nEnd: ${endDate.value?.toLocaleDateString() || '-'}\nComment: ${userComment.value}`
+      startDate.value.toLocaleDateString()
+    }\nEnd: ${endDate.value.toLocaleDateString()}\nComment: ${userComment.value || '—'}`
   )
 
   window.open(`https://wa.me/60122004163?text=${msg}`, '_blank')
@@ -197,6 +228,15 @@ function goTo(path) {
     </transition>
   </header>
 
+  <!-- Centered Warning Modal -->
+<transition name="fade">
+  <div
+    v-if="warningMessage"
+    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[1000] bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded shadow-lg text-center max-w-md w-full"
+  >
+    {{ warningMessage }}
+  </div>
+</transition>
 
 
   <div class="min-h-screen bg-[#063C1E] text-[#E1B98A] font-sans overflow-x-hidden">
@@ -269,9 +309,11 @@ function goTo(path) {
         <button @click="sendRequest" class="w-full bg-[#E1B98A] text-[#063C1E] font-bold py-2 rounded hover:bg-[#b89161] transition">
           Send Request
         </button>
+        
       </div>
     </main>
   </div>
+  
 </template>
 
 <style scoped>
@@ -313,4 +355,19 @@ function goTo(path) {
 .delay-700 { animation-delay: 0.7s;}
 .delay-800 { animation-delay: 0.8s;}
 .delay-900 { animation-delay: 0.9s;}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
 </style>

@@ -87,7 +87,7 @@
   </header>
 
     <!-- Malaysia Hero -->
-    <section class="flex flex-col md:flex-row items-center justify-between px-8 py-40 gap-12">
+    <section class="flex flex-col md:flex-row items-center justify-between px-8 py-10 gap-12">
       <div class="w-full md:w-1/2 animate-fade-in">
         <h1 class="text-4xl font-bold mb-4">Singapore 🇸🇬</h1>
         <p class="text-gray-600 mb-4">Explore the heart of Southeast Asia! From the vibrant streets of Orchard Road to the tranquil beauty of Gardens by the Bay, Singapore offers a blend of urban adventure and natural wonders.</p>
