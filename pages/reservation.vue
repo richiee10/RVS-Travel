@@ -82,6 +82,32 @@ function sendRequest() {
 
   window.open(`https://wa.me/60122004163?text=${msg}`, '_blank')
 }
+import { useRouter } from 'vue-router'
+
+const menuOpen = ref(false)
+const route = useRoute()
+const router = useRouter()
+
+const navLinks = [
+  { to: '/', label: 'Home' },
+  { to: '/tours', label: 'Tours' },
+  { to: '/about', label: 'About' }
+]
+
+function goBack() {
+  router.back()
+}
+
+function isActive(path) {
+  return route.path === path
+}
+function goReservation() {
+  router.push('/reservation')
+}
+function goTo(path) {
+  menuOpen.value = false
+  router.push(path)
+}
 </script>
 
 <template>
@@ -122,10 +148,10 @@ function sendRequest() {
     <!-- Right: Reservation Button -->
     <div class="ml-auto hidden md:block">
       <button
-        @click="goReservation"
+        @click="goBack"
         class="px-10 py-3 border border-[#E1B98A] text-[#E1B98A] bg-transparent rounded transition-all duration-300 font-[100] text-l hover:bg-[#E1B98A] hover:text-[#063C1E] shadow-none animate-fade-in"
       >
-        Make reservation
+        Back
       </button>
     </div>
 
@@ -161,10 +187,10 @@ function sendRequest() {
         <div class="flex-1"></div>
         <div class="flex justify-center mb-10">
           <button
-            @click="goReservation"
+            @click="goBack"
             class="px-10 py-3 border border-[#063C1E] text-[#063C1E] bg-transparent rounded transition-all duration-300 font-[100] text-2xl hover:bg-[#063C1E] hover:text-[#E1B98A] shadow-none animate-fade-in"
           >
-            Make reservation
+            Back
           </button>
         </div>
       </div>
@@ -272,4 +298,19 @@ function sendRequest() {
   border: 1px solid #E1B98A !important;
   padding: 10px !important;
 }
+</style>
+<style scoped>
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.animate-fade-in { animation: fade-in 0.8s ease-out both;}
+.delay-200 { animation-delay: 0.2s;}
+.delay-300 { animation-delay: 0.3s;}
+.delay-400 { animation-delay: 0.4s;}
+.delay-500 { animation-delay: 0.5s;}
+.delay-600 { animation-delay: 0.6s;}
+.delay-700 { animation-delay: 0.7s;}
+.delay-800 { animation-delay: 0.8s;}
+.delay-900 { animation-delay: 0.9s;}
 </style>
